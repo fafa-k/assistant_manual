@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>晨揚助理員手冊互動指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Supportive Calm -->
+    <!-- Application Structure Plan: 本應用程式採用頂部導航欄配合單頁滾動的結構。這種設計允許使用者（助理員）既可以依序學習手冊內容，也可以在緊急情況下快速點擊導航，跳轉到特定的「情境應對」章節，即時獲取指導。核心的「情緒曲線」被設計為一個互動圖表，使用者可點擊不同階段來查看對應的詳細策略，將抽象概念轉化為動態的學習體驗，強化記憶與理解。整體結構以實用性與快速查閱為優先，旨在成為助理員日常工作中的可靠數位工具。 -->
+    <!-- Visualization & Content Choices: 1. 情緒曲線圖: 使用Chart.js的線圖來視覺化情緒的五個階段。目標是教學與強化概念。互動方式為點擊各階段按鈕，圖表會高亮對應區段，並在下方顯示詳細文字，將視覺與資訊緊密結合。 2. 情境應對: 採用手風琴（Accordion）式佈局。目標是提供快速、清晰的分類指引。互動方式為點擊標題展開/收合內容，避免資訊過載，讓使用者能專注於當前遇到的問題。 3. 其他文字內容: 使用帶有圖示的卡片式設計。目標是清晰地呈現核心理念與原則。這種方式比純文字更易讀，有助於快速掌握重點。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #fdfaf6;
+            color: #4a4a4a;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #c5a07e;
+            border-bottom-color: #c5a07e;
+        }
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #f0e9e1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .accordion-header {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .accordion-header:hover {
+            background-color: #f9f5f0;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .stage-button {
+            transition: all 0.3s ease;
+            border: 1px solid #e0d8ce;
+        }
+        .stage-button.active {
+            background-color: #c5a07e;
+            color: #ffffff;
+            border-color: #c5a07e;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm border-b border-f0e9e1">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold text-[#8c6f50]">晨揚助理員手冊互動指南</h1>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#core-philosophy" class="nav-link font-medium py-1">核心理念</a>
+                    <a href="#emotion-curve" class="nav-link font-medium py-1">情緒曲線</a>
+                    <a href="#daily-rules" class="nav-link font-medium py-1">日常守則</a>
+                    <a href="#situational-response" class="nav-link font-medium py-1">情境應對</a>
+                    <a href="#self-care" class="nav-link font-medium py-1">自我照顧</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+        
+        <section id="core-philosophy" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#8c6f50]">核心理念：行為即溝通</h2>
+            <p class="text-center text-lg text-gray-600 mb-8">理解學生的挑戰行為是有效陪伴的第一步。</p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="card p-6 rounded-xl text-center">
+                    <div class="text-4xl mb-4">💬</div>
+                    <h3 class="text-xl font-bold mb-2 text-[#a78665]">行為是需求的表達</h3>
+                    <p class="text-gray-600">學生的攻擊、罵人等行為，往往是表達挫折、焦慮或需求的方式。</p>
+                </div>
+                <div class="card p-6 rounded-xl text-center">
+                    <div class="text-4xl mb-4">🔍</div>
+                    <h3 class="text-xl font-bold mb-2 text-[#a78665]">探尋行為背後的原因</h3>
+                    <p class="text-gray-600">所有行為都有其原因，我們的任務是理解這些原因，而不僅是制止行為。</p>
+                </div>
+                <div class="card p-6 rounded-xl text-center">
+                    <div class="text-4xl mb-4">🧘</div>
+                    <h3 class="text-xl font-bold mb-2 text-[#a78665]">您的冷靜是穩定劑</h3>
+                    <p class="text-gray-600">當學生情緒高漲時，您的冷靜是穩定局面的關鍵，避免被情緒帶動。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="emotion-curve" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#8c6f50]">情緒曲線圖：預測與應對</h2>
+            <p class="text-center text-lg text-gray-600 mb-8">這張圖能幫助您預測學生的行為，並在問題惡化前有效介入。點擊下方按鈕探索各階段。</p>
+            <div class="card rounded-xl p-4 md:p-8">
+                <div class="chart-container mb-6">
+                    <canvas id="emotionChart"></canvas>
+                </div>
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-6" id="stage-buttons"></div>
+                <div id="stage-details" class="bg-[#f9f5f0] p-6 rounded-lg min-h-[150px]"></div>
+            </div>
+        </section>
+
+        <section id="daily-rules" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#8c6f50]">日常陪伴守則</h2>
+            <p class="text-center text-lg text-gray-600 mb-8">在平靜期建立穩固的信任關係，是預防危機的最佳策略。</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                 <div class="card p-6 rounded-xl">
+                    <h3 class="font-bold text-lg text-[#a78665] mb-2">建立信任</h3>
+                    <p>設定清晰的行為界線，並信守對學生的每一個承諾，無論大小。</p>
+                </div>
+                <div class="card p-6 rounded-xl">
+                    <h3 class="font-bold text-lg text-[#a78665] mb-2">主動關心</h3>
+                    <p>在非衝突的平穩時期，主動與學生建立正向、愉快的互動關係。</p>
+                </div>
+                <div class="card p-6 rounded-xl">
+                    <h3 class="font-bold text-lg text-[#a78665] mb-2">肯定與讚美</h3>
+                    <p>具體且及時地讚美學生的每一個微小進步，強化其正面行為。</p>
+                </div>
+                <div class="card p-6 rounded-xl">
+                    <h3 class="font-bold text-lg text-[#a78665] mb-2">保持同理</h3>
+                    <p>始終嘗試理解學生行為背後的情緒與需求，以同理心進行回應。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="situational-response" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#8c6f50]">情境應對指南</h2>
+            <p class="text-center text-lg text-gray-600 mb-8">針對不同挑戰行為的具體應對策略。</p>
+            <div id="accordion-container" class="space-y-4 max-w-4xl mx-auto"></div>
+        </section>
+
+        <section id="self-care" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-2 text-[#8c6f50]">自我照顧與專業成長</h2>
+            <p class="text-center text-lg text-gray-600 mb-8">照顧好自己，才能更好地陪伴學生。</p>
+            <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                 <div class="card p-6 rounded-xl">
+                    <h3 class="font-bold text-lg text-[#a78665] mb-2">照顧自己</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-600">
+                        <li>定期喘息，從事能讓自己放鬆的活動。</li>
+                        <li>建立支持網絡，與同事、導師分享交流。</li>
+                        <li>覺察自身情緒，避免將工作壓力帶入生活。</li>
+                    </ul>
+                </div>
+                <div class="card p-6 rounded-xl">
+                    <h3 class="font-bold text-lg text-[#a78665] mb-2">專業成長</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-600">
+                        <li>記錄與反思每日的互動與應對策略。</li>
+                        <li>善用學校提供的培訓與輔導資源。</li>
+                        <li>在老師的指導下與家長保持專業溝通。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="text-center py-6 mt-12 border-t border-f0e9e1">
+        <p class="text-gray-500">&copy; 助理員手冊互動指南</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const emotionData = {
+                stages: [
+                    { name: '平靜期', color: '#a3c1ad', description: '學生情緒穩定、專注，能夠學習與互動。', task: '您的任務：專注於建立關係和給予肯定。' },
+                    { name: '觸發期', color: '#f0e68c', description: '學生出現早期不滿或焦慮跡象，如嘆氣、坐立不安。', task: '您的任務：溫和地介入，察覺觸發點，並提供緩解。' },
+                    { name: '高漲期', color: '#e57373', description: '情緒失控，可能發生攻擊、大聲罵人等行為。', task: '您的任務：優先確保安全，保持距離，避免言語衝突，等待情緒緩和。' },
+                    { name: '冷卻期', color: '#a4b0be', description: '情緒開始消退，但學生仍敏感、脆弱，可能感到羞愧。', task: '您的任務：保持安靜，給予空間，提供無聲的支持。' },
+                    { name: '恢復期', color: '#b9d7d9', description: '學生情緒恢復平靜，能夠進行反思與溝通。', task: '您的任務：溫和地討論剛才的事件，引導他表達感受，並給予支持。' }
+                ]
+            };
+            
+            const responseData = [
+                {
+                    category: '攻擊行為',
+                    items: [
+                        { title: '推擠／打人', content: '立即隔離，保持安全距離。用堅定語氣制止。立即向老師或學務處尋求支援。' },
+                        { title: '丟擲物品', content: '優先保護自己與他人安全。冷靜下達「把東西放下」的指令。' },
+                        { title: '自我傷害', content: '立即移除周遭的危險物品。此為緊急情況，必須立即向專業人員求助。' }
+                    ]
+                },
+                {
+                    category: '語言攻擊',
+                    items: [
+                        { title: '頻繁說髒話', content: '平靜糾正，不要過度反應。事後引導，提供可接受的替代詞彙。' },
+                        { title: '人身攻擊', content: '立即嚴肅制止此行為。引導學生換位思考，體會他人感受。' },
+                        { title: '誣賴老師', content: '立即告知：「我們很重視這件事，立刻到學務處處理。」將問題轉交給校方專業人員。' }
+                    ]
+                },
+                {
+                    category: '學習與社交',
+                    items: [
+                        { title: '拒絕學習', content: '將大任務拆解成小步驟，提供選擇權以增加掌控感。' },
+                        { title: '不參與活動', content: '尊重其選擇，不強迫。提供低壓力的參與方式，如擔任觀察員。' },
+                        { title: '中途哭鬧/發呆', content: '提供安靜的空間讓他休息，並給予無聲的陪伴與支持。' }
+                    ]
+                }
+            ];
+
+            const stageButtonsContainer = document.getElementById('stage-buttons');
+            const stageDetailsContainer = document.getElementById('stage-details');
+            
+            emotionData.stages.forEach((stage, index) => {
+                const button = document.createElement('button');
+                button.textContent = stage.name;
+                button.classList.add('stage-button', 'px-3', 'py-2', 'md:px-4', 'rounded-full', 'font-medium', 'text-sm', 'md:text-base', 'bg-white');
+                button.dataset.index = index;
+                stageButtonsContainer.appendChild(button);
+            });
+
+            const ctx = document.getElementById('emotionChart').getContext('2d');
+            const emotionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: emotionData.stages.map(s => s.name),
+                    datasets: [{
+                        label: '情緒強度',
+                        data: [1, 2.5, 5, 2, 1],
+                        borderColor: '#c5a07e',
+                        backgroundColor: 'rgba(197, 160, 126, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 6,
+                        pointBackgroundColor: emotionData.stages.map(s => s.color),
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            display: false,
+                        },
+                        x: {
+                            grid: { display: false },
+                             ticks: {
+                                font: {
+                                    size: 12,
+                                    family: "'Inter', 'Noto Sans TC', sans-serif"
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            function updateStageView(index) {
+                const stage = emotionData.stages[index];
+                stageDetailsContainer.innerHTML = `
+                    <h3 class="font-bold text-xl mb-2 text-[#a78665]">${stage.name}</h3>
+                    <p class="text-gray-700 mb-2">${stage.description}</p>
+                    <p class="font-medium text-gray-800">${stage.task}</p>
+                `;
+
+                document.querySelectorAll('.stage-button').forEach((btn, i) => {
+                    btn.classList.toggle('active', i === index);
+                });
+
+                emotionChart.data.datasets[0].pointRadius = emotionData.stages.map((_, i) => i === index ? 10 : 6);
+                emotionChart.data.datasets[0].pointBorderWidth = emotionData.stages.map((_, i) => i === index ? 3 : 2);
+                emotionChart.update();
+            }
+
+            stageButtonsContainer.addEventListener('click', (e) => {
+                if (e.target.matches('.stage-button')) {
+                    const index = parseInt(e.target.dataset.index);
+                    updateStageView(index);
+                }
+            });
+            
+            updateStageView(0);
+
+
+            const accordionContainer = document.getElementById('accordion-container');
+            responseData.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.classList.add('card', 'rounded-xl', 'overflow-hidden');
+                
+                let itemsHtml = '';
+                category.items.forEach(item => {
+                    itemsHtml += `
+                        <div class="border-b border-f0e9e1 last:border-b-0">
+                            <h4 class="font-medium px-6 py-4">${item.title}</h4>
+                            <div class="px-6 pb-4 text-gray-600">
+                                <p>${item.content}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                categoryDiv.innerHTML = `
+                    <div class="accordion-header p-4 md:p-6 flex justify-between items-center bg-[#f9f5f0]">
+                        <h3 class="text-xl font-bold text-[#a78665]">${category.category}</h3>
+                        <span class="transform transition-transform duration-300 text-2xl font-light text-[#c5a07e]">+</span>
+                    </div>
+                    <div class="accordion-content bg-white">
+                        <div class="divide-y divide-f0e9e1">
+                            ${category.items.map(item => `
+                                <div class="p-6">
+                                    <h4 class="font-bold text-lg text-gray-800 mb-2">${item.title}</h4>
+                                    <p class="text-gray-600">${item.content}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                accordionContainer.appendChild(categoryDiv);
+            });
+            
+            accordionContainer.addEventListener('click', e => {
+                const header = e.target.closest('.accordion-header');
+                if (header) {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('span');
+                    
+                    header.parentElement.parentElement.querySelectorAll('.accordion-content').forEach(c => {
+                       if (c !== content) {
+                           c.style.maxHeight = null;
+                           c.previousElementSibling.querySelector('span').classList.remove('rotate-45');
+                           c.previousElementSibling.querySelector('span').textContent = '+';
+                       }
+                    });
+
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.classList.remove('rotate-45');
+                        icon.textContent = '+';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.classList.add('rotate-45');
+                        icon.textContent = ' ';
+                    }
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px", threshold: 0 });
+
+            sections.forEach(section => observer.observe(section));
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
